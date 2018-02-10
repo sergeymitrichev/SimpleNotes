@@ -52,5 +52,13 @@ public class Note {
         this.createdDate = createdDate;
     }
 
-
+    @Override
+    public String toString() {
+        return "Note{" +
+                "id=" + id +
+                ", noteText='" + noteText + '\'' +
+                ", done=" + done +
+                ", createdDate=" + createdDate +
+                '}';
+    }
 }

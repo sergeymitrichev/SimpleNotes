@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NoteServiceImpl implements NoteService {
@@ -41,7 +42,13 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public List<Note> listNotes() {
-        return this.noteDao.listNotes();
+    public List<Note> listNotes(int page, int size) {
+        return this.noteDao.listNotes(page, size);
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Integer> getNotePaging(int page, int size) {
+        return this.noteDao.getNotePaging(page, size);
     }
 }

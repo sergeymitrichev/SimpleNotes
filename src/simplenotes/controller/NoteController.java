@@ -22,12 +22,19 @@ public class NoteController {
     }
 
     @RequestMapping(value = "notes", method = RequestMethod.GET)
-    public String listNotes(Model model) {
+    public String listNotes() {
+        return "redirect:/notes/1/10";
+    }
+
+    @RequestMapping(value = "/notes/{page}/{size}", method = RequestMethod.GET)
+    public String listNotes(@PathVariable("page") int page, @PathVariable("size") int size, Model model) {
         model.addAttribute("note", new Note());
-        model.addAttribute("listNotes", this.noteService.listNotes());
+        model.addAttribute("listNotes", this.noteService.listNotes(page, size));
+        model.addAttribute("paging", this.noteService.getNotePaging(page, size));
 
         return "notes";
     }
+
 
     @RequestMapping(value = "/notes/create", method = RequestMethod.POST)
     public String createNote(@ModelAttribute("note") Note note) {
@@ -36,20 +43,22 @@ public class NoteController {
         } else {
             this.noteService.updateNote(note);
         }
+
         return "redirect:/notes";
     }
 
     @RequestMapping(value = "/delete/{id}")
     public String deleteNote(@PathVariable("id") int id) {
         this.noteService.deleteNote(id);
+
         return "redirect:/notes";
     }
 
-    @RequestMapping(value = "/update/{id}")
-    public String updateNote(@PathVariable("id") int id, Model model) {
-        model.addAttribute("note", this.noteService.getNoteById(id));
-        model.addAttribute("listNotes", this.noteService.listNotes());
-        return "notes";
+    @RequestMapping(value = "/update")
+    public String updateNote(@ModelAttribute("note") Note note) {
+        this.noteService.updateNote(note);
+
+        return "redirect:/notes";
     }
 
     @RequestMapping(value = "/read/{id}")

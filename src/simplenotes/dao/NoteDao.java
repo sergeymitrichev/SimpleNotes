@@ -14,7 +14,7 @@ public interface NoteDao {
 
     Note getNoteById(int id);
 
-    List<Note> listNotes(int page, int limit);
+    List<Note> listNotes(int page, String filter, Boolean sort);
 
-    Map<String,Integer> getNotePaging(int page, int size);
+    Map<String,Object> getCriteria(int page, String filter, Boolean sort);
 }

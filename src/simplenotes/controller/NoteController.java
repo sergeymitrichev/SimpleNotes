@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import simplenotes.model.Note;
 import simplenotes.service.NoteService;
 
@@ -21,21 +18,83 @@ public class NoteController {
         this.noteService = noteService;
     }
 
-    @RequestMapping(value = "notes", method = RequestMethod.GET)
-    public String listNotes() {
-        return "redirect:/notes/1/10";
-    }
-
-    @RequestMapping(value = "/notes/{page}/{size}", method = RequestMethod.GET)
-    public String listNotes(@PathVariable("page") int page, @PathVariable("size") int size, Model model) {
+    @RequestMapping(value = "/notes", method = RequestMethod.GET)
+    public String listNotes(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "done", required = false, defaultValue = "all") String filter,
+            @RequestParam(value = "created", required = false, defaultValue = "false") Boolean sort,
+            Model model
+    ) {
         model.addAttribute("note", new Note());
-        model.addAttribute("listNotes", this.noteService.listNotes(page, size));
-        model.addAttribute("paging", this.noteService.getNotePaging(page, size));
+        model.addAttribute("listNotes", this.noteService.listNotes(page,  filter, sort));
+        model.addAttribute("criteria", this.noteService.getCriteria(page,  filter, sort));
+
+        return "notes";
+    }
+/*
+    @RequestMapping(value = "/notes/{page}", method = RequestMethod.GET)
+    public String listNotes(@PathVariable("page") int page, Model model) {
+        model.addAttribute("note", new Note());
+        model.addAttribute("listNotes", this.noteService.listNotes(page, "all", false));
+        model.addAttribute("criteria", this.noteService.getCriteria(page, "all", false));
 
         return "notes";
     }
 
+    @RequestMapping(value = "/notes", method = RequestMethod.GET)
+    public String listNotes(@RequestParam("done") String filter, Model model) {
+        model.addAttribute("note", new Note());
+        model.addAttribute("listNotes", this.noteService.listNotes(1, filter, false));
+        model.addAttribute("criteria", this.noteService.getCriteria(1, filter, false));
 
+        return "notes";
+    }
+
+    @RequestMapping(value = "/notes", method = RequestMethod.GET)
+    public String listNotes(@RequestParam("created") Boolean sort, Model model) {
+        model.addAttribute("note", new Note());
+        model.addAttribute("listNotes", this.noteService.listNotes(1, "all", sort));
+        model.addAttribute("criteria", this.noteService.getCriteria(1, "all", sort));
+
+        return "notes";
+    }
+
+    @RequestMapping(value = "/notes", method = RequestMethod.GET)
+    public String listNotes(@RequestParam("done") String filter, @RequestParam("created") Boolean sort, Model model) {
+        model.addAttribute("note", new Note());
+        model.addAttribute("listNotes", this.noteService.listNotes(1, filter, sort));
+        model.addAttribute("criteria", this.noteService.getCriteria(1, filter, sort));
+
+        return "notes";
+    }
+
+    @RequestMapping(value = "/notes/{page}", method = RequestMethod.GET)
+    public String listNotes(@PathVariable("page") int page, @RequestParam("created") Boolean sort, Model model) {
+        model.addAttribute("note", new Note());
+        model.addAttribute("listNotes", this.noteService.listNotes(page, "all", sort));
+        model.addAttribute("criteria", this.noteService.getCriteria(page, "all", sort));
+
+        return "notes";
+    }
+
+    @RequestMapping(value = "/notes/{page}", method = RequestMethod.GET)
+    public String listNotes(@PathVariable("page") int page, @RequestParam("done") String filter, Model model) {
+        model.addAttribute("note", new Note());
+        model.addAttribute("listNotes", this.noteService.listNotes(page, filter, false));
+        model.addAttribute("criteria", this.noteService.getCriteria(page, filter, false));
+
+        return "notes";
+    }
+
+    @RequestMapping(value = "/notes/{page}", method = RequestMethod.GET)
+    public String listNotes(@PathVariable("page") int page, @RequestParam("done") String filter, @RequestParam("created") Boolean sort, Model model) {
+        model.addAttribute("note", new Note());
+        model.addAttribute("listNotes", this.noteService.listNotes(page, filter, sort));
+        model.addAttribute("criteria", this.noteService.getCriteria(page, filter, sort));
+
+        return "notes";
+    }
+*/
     @RequestMapping(value = "/notes/create", method = RequestMethod.POST)
     public String createNote(@ModelAttribute("note") Note note) {
         if (note.getId() == 0) {

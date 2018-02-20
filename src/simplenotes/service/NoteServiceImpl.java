@@ -42,13 +42,13 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public List<Note> listNotes(int page, int size) {
-        return this.noteDao.listNotes(page, size);
+    public List<Note> listNotes(int page, String filter, Boolean sort) {
+        return this.noteDao.listNotes(page, filter, sort);
     }
 
     @Override
     @Transactional
-    public Map<String, Integer> getNotePaging(int page, int size) {
-        return this.noteDao.getNotePaging(page, size);
+    public Map<String, Object> getCriteria(int page, String filter, Boolean sort) {
+        return this.noteDao.getCriteria(page, filter, sort);
     }
 }

@@ -10,6 +10,6 @@ public interface NoteService {
     void updateNote(Note note);
     void deleteNote(int id);
     Note getNoteById(int id);
-    List<Note> listNotes(int page, int size);
-    Map<String,Integer> getNotePaging(int page, int size);
+    List<Note> listNotes(int page, String filter, Boolean sort);
+    Map<String,Object> getCriteria(int page, String filter, Boolean sort);
 }

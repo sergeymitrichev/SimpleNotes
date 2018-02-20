@@ -1,11 +1,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ page contentType="text/html;charset=utf-8" %>
 <%@ page session="false" %>
 
 <c:url var="updateAction" value="/update"/>
 <form:form action="${updateAction}" commandName="note" class="form-row align-items-center">
     <form:hidden path="id" value="${note.id}"/>
+    <form:hidden path="createdDate" value="${note.createdDate}"/>
     <div class="form-group col-sm-1">
         ID: ${note.id}
 

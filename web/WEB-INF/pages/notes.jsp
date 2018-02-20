@@ -2,6 +2,17 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page session="false" %>
+<%@ page contentType="text/html;charset=utf-8" %>
+
+<c:set var="p" value="${criteria.get('current')}"/> <%-- current page (1-based) --%>
+<c:set var="l" value="5"/> <%-- amount of page links to be displayed --%>
+<c:set var="r" value="${l / 2}"/> <%-- minimum link range ahead/behind --%>
+<c:set var="n" value="${criteria.get('total')}"/> <%-- total amount of notes --%>
+<c:set var="s" value="${criteria.get('size')}"/> <%-- notes per page --%>
+<c:set var="t" value="${criteria.get('pages')}"/> <%-- total amount of pages --%>
+<c:set var="filter" value="${criteria.get('filter')}"/>
+<c:set var="sort" value="${criteria.get('sort')}"/>
+
 <html>
 <head>
     <title>Notes list</title>
@@ -12,7 +23,45 @@
 <div class="container">
     <a href="../../index.jsp">Main page</a>
     <h1>Note list</h1>
+    <div class="float-left">
+        <c:if test="${filter.equals(\"1\")}">
+            <span class="btn btn-primary">Выполненные</span>
+        </c:if>
+        <c:if test="${!filter.equals(\"1\")}">
+            <a class="btn btn-outline-primary"
+               href="/notes?page=${criteria.get("page")}&done=1&created=${criteria.get("sort")}">Выполненные</a>
+        </c:if>
 
+        <c:if test="${filter.equals(\"0\")}">
+            <span class="btn btn-primary">Невыполненные</span>
+        </c:if>
+        <c:if test="${!filter.equals(\"0\")}">
+            <a class="btn btn-outline-primary"
+               href="/notes?page=${criteria.get("page")}&done=0&created=${criteria.get("sort")}">Невыполненные</a>
+        </c:if>
+
+        <c:if test="${filter.equals(\"all\")}">
+            <span class="btn btn-primary">Все</span>
+        </c:if>
+        <c:if test="${!filter.equals(\"all\")}">
+            <a class="btn btn-outline-primary"
+               href="/notes?page=${criteria.get("page")}&created=${criteria.get("sort")}">Все</a>
+        </c:if>
+    </div>
+    <div class="float-right">
+        <c:if test="${sort.equals(\"true\")}">
+            <span class="btn btn-primary">Сначала новые</span>
+            <a class="btn btn-outline-primary" href="/notes?page=${criteria.get("page")}&done=${criteria.get("filter")}">Сначала
+                старые</a>
+        </c:if>
+        <c:if test="${!sort.equals(\"true\")}">
+            <a class="btn btn-outline-primary"
+               href="/notes?page=${criteria.get("page")}&done=${criteria.get("filter")}&created=true">Сначала новые</a>
+            <span class="btn btn-primary">Сначала старые</span>
+        </c:if>
+
+    </div>
+    <div class="clearfix mb-5"></div>
     <c:if test="${!empty listNotes}">
         <table class="table table-hover">
             <thead>
@@ -20,7 +69,9 @@
                 <th>ID</th>
                 <th>Text</th>
                 <th>Created Date</th>
-                <th>Is Done</th>
+                <th>
+                    Is Done
+                </th>
                 <th>Update</th>
                 <th>Delete</th>
             </tr>
@@ -58,29 +109,28 @@
                 <td></td>
             </tr>
             </tbody>
-            <!-- paginator row will be here -->
             <tfoot>
             <tr>
                 <td colspan="6">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination">
 
-                            <c:set var="p" value="${paging.get('current')}" /> <%-- current page (1-based) --%>
-                            <c:set var="l" value="5" /> <%-- amount of page links to be displayed --%>
-                            <c:set var="r" value="${l / 2}" /> <%-- minimum link range ahead/behind --%>
-                            <c:set var="n" value="${paging.get('total')}" /> <%-- total amount of notes --%>
-                            <c:set var="s" value="${paging.get('size')}" /> <%-- notes per page --%>
-                            <c:set var="t" value="${paging.get('pages')}" /> <%-- total amount of pages --%>
-
-                            <li class="page-item <c:if test="${p == 1}">disabled</c:if>"><a class="page-link" href="/notes/${p - 1}/${s}"><i class="fa fa-chevron-left"></i> Prev</a></li>
-                            <c:set var="begin" value="${((p - r) > 0 ? ((p - r) < (t - l + 1) ? (p - r) : (t - l)) : 0) + 1}" />
-                            <c:set var="end" value="${(p + r) < t ? ((p + r) > l ? (p + r) : l) : t}" />
+                            <li class="page-item <c:if test="${p == 1}">disabled</c:if>"><a class="page-link"
+                                                                                            href="/notes?page=${p - 1}&done=${criteria.get("filter")}&created=${criteria.get("sort")}"><i
+                                    class="fa fa-chevron-left"></i> Prev</a></li>
+                            <c:set var="begin"
+                                   value="1"/>
+                            <c:set var="end" value="${n / 10 + ((n % 10 > 0) ? 1 : 0) }"/>
                             <c:forEach begin="${begin}" end="${end}" var="page">
-                                <li class="page-item <c:if test="${p == page}">active</c:if>"><a class="page-link" href="/notes/${page}/${s}">${page}</a></li>
+                                <li class="page-item <c:if test="${p == page}">active</c:if>"><a class="page-link"
+                                                                                                 href="/notes?page=${page}&done=${criteria.get("filter")}&created=${criteria.get("sort")}">${page}</a>
+                                </li>
                             </c:forEach>
 
 
-                            <li class="page-item <c:if test="${p == t}">disabled</c:if>"><a class="page-link" href="/notes/${1 + p}/${s}">Next <i class="fa fa-chevron-right"></i></a></li>
+                            <li class="page-item <c:if test="${p == t}">disabled</c:if>"><a class="page-link"
+                                                                                            href="/notes?page=${1 + p}&done=${criteria.get("filter")}&created=${criteria.get("sort")}">Next
+                                <i class="fa fa-chevron-right"></i></a></li>
                         </ul>
                     </nav>
 
@@ -90,6 +140,7 @@
             </tfoot>
         </table>
     </c:if>
+    <p>HQL запрос: ${criteria.get("hql")}</p>
 </div>
 
 <div class="modal fade" id="note-update" tabindex="-1" role="dialog" aria-labelledby="note-update-label"

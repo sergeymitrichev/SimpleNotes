@@ -1,9 +1,6 @@
 package simplenotes.dao;
 
 import org.hibernate.query.Query;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import simplenotes.model.Note;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -95,56 +92,4 @@ public class NoteDaoImpl implements NoteDao {
 
         return criteria;
     }
-
-    public List<Note> load(int first, int pageSize, String sortField,
-                           SortOrder sortOrder, Map<String, Object> filters) {
-
-        List<Note> list = new ArrayList<Note>();
-        Session session = sessionFactory.getCurrentSession();
-
-        //Criteria Query
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        javax.persistence.criteria.CriteriaQuery<Note> cq = cb.createQuery(Note.class);
-
-        //From
-        Root<Note> from = cq.from(Note.class);
-
-        //Sort
-        if (sortField != null) {
-            if (sortOrder == SortOrder.ASCENDING) {
-                cq.orderBy(cb.asc(from.get(sortField)));
-            } else {
-                cq.orderBy(cb.desc(from.get(sortField)));
-            }
-        }
-
-        //Filters
-        if (!filters.isEmpty()) {
-
-            List<Predicate> predicates = new ArrayList<Predicate>();
-
-            for (Iterator<String> it = filters.keySet().iterator(); it.hasNext(); ) {
-
-                String filterProperty = it.next();
-                Object filterValue = filters.get(filterProperty);
-                Expression<String> literal = cb.upper(cb.literal((String) filterProperty.toUpperCase()));
-
-                predicates.add(cb.like(literal, String.valueOf("%" + filterValue + "%").toUpperCase()));
-
-            }
-            cq.where(predicates.toArray(new Predicate[predicates.size()]));
-        }
-
-        Query q = session.createQuery(cq);
-
-        list = q
-                .setFirstResult(first)
-                .setMaxResults(pageSize)
-                .getResultList();
-
-
-        return list;
-    }
-
-
 }
